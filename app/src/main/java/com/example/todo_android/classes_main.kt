@@ -1,6 +1,16 @@
 package com.example.todo_android
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
 
 enum class Priority {
     HIGH,
@@ -12,48 +22,48 @@ data class Task (
     var completed : Boolean = false,
     var priority : Priority = Priority.MEDIUM
 )
-fun main() {
-    var list = mutableListOf<Task>()
-    var check = true
-    println("To load an already existing ToDo list, press 'l'")
-    println("To add a new task in the list, press 'n'")
-    println("To view all the tasks in the list, press 'v'")
-    println("To update a task, press 'u'")
-    println("To mark a task as completed, press 'c'")
-    println("To change the priority of a task, press 'p'")
-    println("To delete a task, press 'd'")
-    println("To exit the app press 'e'")
-    while (check) {
-        when (readln()) {
-            "e" -> {
-                check = false
-            }
-            "n" -> add(list)
-            "v" -> {
-                view(list)
-                println("To view the list based on the completion of tasks press 'c', else press 'ce':")
-                val inp = readLine()
-                if (inp!=null) {
-                    when(inp) {
-                        "c" -> view_comp(list)
-                        "ce" -> {
-                            println("Done! What's next :")
-                            continue
-                        }
-                    }
-                }
-            }
-            "u" -> update(list)
-            "d" -> delete(list)
-            "c" -> complete(list)
-            "p" -> priority(list)
-            "l" -> {
-                println("Enter the name of the file along with extension (eg : demo.txt)")
-                list = loadTasksFormFile(readln())
-                view(list)
-            }
-            else -> println("Enter a valid command :")
+
+fun MainScreen() {
+    val taskList = remember { mutableStateListOf<Task>() }
+    Column {
+        Text("Task List:")
+        taskList.forEach { task ->
+            Text(task.description)
+        }
+        AddTaskScreen {
+
         }
     }
-    save(list,"Demo.txt")
+}
+
+fun AddTaskScreen(onTaskAdded: (Task) -> Unit) {
+    val description = remember { mutableStateOf("") }
+    TextField(
+        value = description.value,
+        onValueChange = {value ->
+            description.value = value
+        },
+        label = { Text("Text Description") }
+    )
+
+    Button(
+        onClick = {
+            val newTask = Task(description.value)
+            onTaskAdded(newTask)
+            description.value = ""
+        }
+    ) {
+        Text("Add Task")
+    }
+}
+
+@Composable
+fun MyApp() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "main") {
+        composable("main") { MainScreen() }
+    }
+}
+fun main() {
+    MyApp()
 }
