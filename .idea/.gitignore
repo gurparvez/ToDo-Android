@@ -1,0 +1,18 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Android Studio / IntelliJ IDEA
+*.iml
+/.idea/
+.gradle/
+/local.properties
+*.name
+
+# Build output
+/build/
+/out/
+
+# Gradle Wrapper
+/gradle/wrapper/gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.properties
